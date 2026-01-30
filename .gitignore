@@ -1,0 +1,43 @@
+# Node modules
+node_modules/
+frontend/node_modules/
+.npm
+.eslintcache
+
+# Build outputs
+dist/
+build/
+target/
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+.settings/
+.classpath
+.project
+.factorypath
+
+# Database & Sensitive Data
+data/
+*.db
+backend/data/
+db.sqlite
+
+# Temp files
+tmp/
+logs/
+*.log
+
+# Misc
+.gemini/
+.env
+.env.local
+.env.production

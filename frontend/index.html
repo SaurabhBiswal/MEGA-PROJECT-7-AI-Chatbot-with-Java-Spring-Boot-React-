@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saurabh AI</title>
+
+  <!-- ✅ ADDED SCRIPT TO PREVENT FLASH -->
+  <script>
+    // Define global for sockjs-client compatibility with Vite
+    window.global = window;
+
+    // Prevent flash of wrong theme
+    (function () {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      // If saved theme is dark, or no saved theme but system prefers dark
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        console.log('Initial theme set to DARK');
+      } else {
+        document.documentElement.classList.remove('dark');
+        console.log('Initial theme set to LIGHT');
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
