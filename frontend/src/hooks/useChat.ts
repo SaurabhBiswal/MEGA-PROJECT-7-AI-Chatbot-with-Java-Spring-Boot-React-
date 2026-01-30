@@ -39,7 +39,8 @@ export const useChat = (conversationId?: number, onConversationUpdate?: () => vo
     useEffect(() => {
         if (!username) return;
 
-        const socket = new SockJS('http://localhost:8080/ws');
+        const wsBaseUrl = import.meta.env.VITE_WS_URL || 'http://localhost:8080';
+        const socket = new SockJS(`${wsBaseUrl}/ws`);
         const client = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
