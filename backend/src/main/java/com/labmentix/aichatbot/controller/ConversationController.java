@@ -72,4 +72,23 @@ public class ConversationController {
         conversation.setTitle(request.getTitle().replace("\"", ""));
         return ResponseEntity.ok(conversationRepository.save(conversation));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteConversation(
+            Authentication authentication,
+            @PathVariable("id") Long id) {
+
+        System.out.println("DEBUG: Deleting conversation " + id);
+
+        Conversation conversation = conversationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+
+        // Security check: ensure user owns the conversation
+        if (!conversation.getUser().getUsername().equals(authentication.getName())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        conversationRepository.delete(conversation);
+        return ResponseEntity.ok().build();
+    }
 }
