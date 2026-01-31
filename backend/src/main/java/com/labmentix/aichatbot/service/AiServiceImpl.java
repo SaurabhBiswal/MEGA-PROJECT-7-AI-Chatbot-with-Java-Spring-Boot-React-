@@ -42,7 +42,12 @@ public class AiServiceImpl implements AiService {
     public CompletableFuture<String> generateResponse(String userMessage) {
         try {
             log.info("Searching context for message: {}", userMessage);
-            String context = knowledgeBaseService.searchContext(userMessage);
+            String context = "";
+            try {
+                context = knowledgeBaseService.searchContext(userMessage);
+            } catch (Exception e) {
+                log.warn("Knowledge base search failed, proceeding with standard chat: {}", e.getMessage());
+            }
 
             String enhancedPrompt = userMessage;
             if (context != null && !context.isEmpty()) {
