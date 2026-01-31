@@ -43,6 +43,7 @@ public class DebugController {
                 status.put("users_columns", columns);
             }
 
+            status.put("current_timeout", jdbcTemplate.queryForObject("SHOW statement_timeout", String.class));
             status.put("database", "CONNECTED");
         } catch (Exception e) {
             status.put("error", e.getMessage());
