@@ -79,6 +79,10 @@ public class FileStorageService {
     }
 
     private String uploadToSupabase(MultipartFile file, String fileName) throws IOException {
+        if (supabaseUrl == null || supabaseUrl.isEmpty() || supabaseKey == null || supabaseKey.isEmpty()) {
+            throw new RuntimeException(
+                    "Supabase Storage configuration is incomplete. Please set SUPABASE_URL and SUPABASE_KEY in Render environment variables.");
+        }
         String uploadUrl = supabaseUrl + "/storage/v1/object/" + supabaseBucket + "/" + fileName;
 
         HttpRequest request = HttpRequest.newBuilder()
