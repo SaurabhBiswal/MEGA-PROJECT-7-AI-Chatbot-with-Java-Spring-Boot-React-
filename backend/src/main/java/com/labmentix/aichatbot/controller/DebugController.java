@@ -51,4 +51,29 @@ public class DebugController {
         }
         return status;
     }
+
+    @GetMapping("/fix-db")
+    public Map<String, Object> fixDb() {
+        Map<String, Object> result = new HashMap<>();
+        java.util.List<String> logs = new java.util.ArrayList<>();
+
+        String[] commands = {
+                "ALTER TABLE messages ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'SENT'",
+                "ALTER TABLE messages ADD COLUMN IF NOT EXISTS attachment_url TEXT",
+                "ALTER TABLE messages ADD COLUMN IF NOT EXISTS attachment_type VARCHAR(100)",
+                "ALTER TABLE messages ADD COLUMN IF NOT EXISTS sender_id BIGINT REFERENCES users(id) ON DELETE SET NULL"
+        };
+
+        for (String cmd : commands) {
+            try {
+                jdbcTemplate.execute(cmd);
+                logs.add("✅ SUCCESS: " + cmd);
+            } catch (Exception e) {
+                logs.add("❌ FAIL: " + cmd + " || Error: " + e.getMessage());
+            }
+        }
+
+        result.put("execution_log", logs);
+        return result;
+    }
 }
