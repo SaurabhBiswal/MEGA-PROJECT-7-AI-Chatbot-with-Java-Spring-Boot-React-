@@ -55,20 +55,19 @@ public class DatabaseInitializer implements CommandLineRunner {
                     "type VARCHAR(50) NOT NULL)");
             log.info("✅ Messages table ensured.");
 
-            // 5. FIX: Add missing columns to Messages via a more robust block
+            // 5. FIX: Add missing columns to Messages via a chained execution to preserve
+            // session settings
             log.info("Aggressively ensuring missing columns in messages...");
             try {
-                jdbcTemplate.execute("ALTER TABLE messages ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'SENT'");
-                log.info("✅ status column ensured.");
-                jdbcTemplate.execute("ALTER TABLE messages ADD COLUMN IF NOT EXISTS attachment_url TEXT");
-                log.info("✅ attachment_url column ensured.");
-                jdbcTemplate.execute("ALTER TABLE messages ADD COLUMN IF NOT EXISTS attachment_type VARCHAR(100)");
-                log.info("✅ attachment_type column ensured.");
-                jdbcTemplate.execute(
-                        "ALTER TABLE messages ADD COLUMN IF NOT EXISTS sender_id BIGINT REFERENCES users(id) ON DELETE SET NULL");
-                log.info("✅ sender_id column ensured.");
+                String chainedSql = "SET statement_timeout = 0; " +
+                        "ALTER TABLE messages ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'SENT'; " +
+                        "ALTER TABLE messages ADD COLUMN IF NOT EXISTS attachment_url TEXT; " +
+                        "ALTER TABLE messages ADD COLUMN IF NOT EXISTS attachment_type VARCHAR(100); " +
+                        "ALTER TABLE messages ADD COLUMN IF NOT EXISTS sender_id BIGINT REFERENCES users(id) ON DELETE SET NULL;";
+                jdbcTemplate.execute(chainedSql);
+                log.info("✅ Chained migration commands executed successfully.");
             } catch (Exception e) {
-                log.error("❌ Column update failed (possibly due to timeout): {}", e.getMessage());
+                log.error("❌ Chained migration failed: {}", e.getMessage());
             }
 
             // Also ensure columns exist in creation SQL for fresh setups
