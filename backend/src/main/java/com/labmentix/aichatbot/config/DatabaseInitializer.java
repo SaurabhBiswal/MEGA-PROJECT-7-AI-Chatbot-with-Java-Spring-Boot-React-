@@ -44,20 +44,24 @@ public class DatabaseInitializer implements CommandLineRunner {
                     "conversation_id BIGINT REFERENCES conversations(id) ON DELETE CASCADE, " +
                     "content TEXT NOT NULL, " +
                     "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                    "type VARCHAR(50) NOT NULL, " +
-                    "status VARCHAR(50) DEFAULT 'SENT', " +
-                    "attachment_url TEXT)");
+                    "type VARCHAR(50) NOT NULL)");
             log.info("✅ Messages table ensured.");
 
-            // 5. FIX: Add missing column to Messages
-            try {
-                jdbcTemplate.execute("ALTER TABLE messages ADD COLUMN IF NOT EXISTS attachment_type VARCHAR(100)");
-                log.info("✅ attachment_type column ensured.");
-                jdbcTemplate.execute(
-                        "ALTER TABLE messages ADD COLUMN IF NOT EXISTS sender_id BIGINT REFERENCES users(id) ON DELETE SET NULL");
-                log.info("✅ sender_id column ensured.");
-            } catch (Exception e) {
-                log.warn("Column updates might have failed or already exist: {}", e.getMessage());
+            // 5. FIX: Add missing columns to Messages individually to avoid failures
+            String[] alterCommands = {
+                    "ALTER TABLE messages ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'SENT'",
+                    "ALTER TABLE messages ADD COLUMN IF NOT EXISTS attachment_url TEXT",
+                    "ALTER TABLE messages ADD COLUMN IF NOT EXISTS attachment_type VARCHAR(100)",
+                    "ALTER TABLE messages ADD COLUMN IF NOT EXISTS sender_id BIGINT REFERENCES users(id) ON DELETE SET NULL"
+            };
+
+            for (String cmd : alterCommands) {
+                try {
+                    jdbcTemplate.execute(cmd);
+                    log.info("✅ Executed: {}", cmd);
+                } catch (Exception e) {
+                    log.warn("⚠️ Command failed (might already exist): {} - Error: {}", cmd, e.getMessage());
+                }
             }
 
             // 6. Create Knowledge table

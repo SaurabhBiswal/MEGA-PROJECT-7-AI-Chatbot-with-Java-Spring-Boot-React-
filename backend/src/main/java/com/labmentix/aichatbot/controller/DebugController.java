@@ -32,14 +32,14 @@ public class DebugController {
             // Check columns in messages
             if (tables.contains("messages")) {
                 List<Map<String, Object>> columns = jdbcTemplate.queryForList(
-                        "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'messages'");
+                        "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'messages' AND table_schema = 'public'");
                 status.put("messages_columns", columns);
             }
 
             // Check columns in users
             if (tables.contains("users")) {
                 List<Map<String, Object>> columns = jdbcTemplate.queryForList(
-                        "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users'");
+                        "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users' AND table_schema = 'public'");
                 status.put("users_columns", columns);
             }
 
