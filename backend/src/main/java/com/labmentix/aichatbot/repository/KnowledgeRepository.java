@@ -14,4 +14,6 @@ public interface KnowledgeRepository extends JpaRepository<KnowledgeDocument, Lo
     @Query(value = "SELECT * FROM knowledge_base ORDER BY embedding <=> CAST(:query_embedding AS vector) LIMIT :top_n", nativeQuery = true)
     List<KnowledgeDocument> findSimilarDocuments(@Param("query_embedding") String queryEmbedding,
             @Param("top_n") int topN);
+
+    java.util.Optional<KnowledgeDocument> findBySourceUrl(String sourceUrl);
 }

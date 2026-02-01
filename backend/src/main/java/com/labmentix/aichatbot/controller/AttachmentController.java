@@ -15,10 +15,36 @@ public class AttachmentController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private com.labmentix.aichatbot.service.DocumentProcessorService documentProcessorService;
+
+    @Autowired
+    private com.labmentix.aichatbot.repository.KnowledgeRepository knowledgeRepository;
+
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             String url = fileStorageService.uploadFile(file);
+
+            // If PDF, extract text and save to Knowledge Base (for immediate context)
+            if (file.getContentType() != null && file.getContentType().equals("application/pdf")) {
+                try {
+                    String text = documentProcessorService.extractTextFromPdf(file);
+
+                    // Save to DB
+                    com.labmentix.aichatbot.model.KnowledgeDocument doc = com.labmentix.aichatbot.model.KnowledgeDocument
+                            .builder()
+                            .fileName(file.getOriginalFilename())
+                            .sourceUrl(url)
+                            .content(text)
+                            .build();
+                    knowledgeRepository.save(doc);
+                } catch (Exception e) {
+                    System.err.println("Failed to extract text from PDF: " + e.getMessage());
+                    // Continue without failing the upload
+                }
+            }
+
             return ResponseEntity.ok(Map.of(
                     "url", url,
                     "type", file.getContentType(),

@@ -24,4 +24,7 @@ public class KnowledgeDocument {
     private double[] embedding;
 
     private String fileName;
+
+    @Column(columnDefinition = "TEXT")
+    private String sourceUrl;
 }

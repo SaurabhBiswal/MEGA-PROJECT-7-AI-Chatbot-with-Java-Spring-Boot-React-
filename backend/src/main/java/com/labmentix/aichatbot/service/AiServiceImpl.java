@@ -46,6 +46,13 @@ public class AiServiceImpl implements AiService {
     @Override
     @Async
     public CompletableFuture<String> generateResponse(String userMessage, String attachmentUrl, String attachmentType) {
+        return generateResponse(userMessage, attachmentUrl, attachmentType, null);
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<String> generateResponse(String userMessage, String attachmentUrl, String attachmentType,
+            String extractedText) {
         try {
             log.info("Searching context for message: {}", userMessage);
             String context = "";
@@ -63,12 +70,15 @@ public class AiServiceImpl implements AiService {
             }
 
             if (attachmentUrl != null && !attachmentUrl.isEmpty()) {
-                enhancedPrompt += "\n\n[SYSTEM NOTE: The user has attached a file at the following URL: "
-                        + attachmentUrl
-                        + ". If it is a PDF or image, you cannot read its content deeply unless it was parsed into the Context above. "
-                        + "However, you should acknowledge the file. If the user asks to analyze it, strictly reply: "
-                        + "'I can see you uploaded a file at " + attachmentUrl
-                        + ". To analyze its content, please ensure it is added to the Knowledge Base or describe it to me as I am currently a text-based model with limited direct file access.']";
+                if (extractedText != null && !extractedText.isEmpty()) {
+                    // We have the actual PDF content!
+                    enhancedPrompt += "\n\n[DOCUMENT CONTENT FROM ATTACHED FILE]:\n" + extractedText
+                            + "\n[END OF DOCUMENT]\n\n";
+                    enhancedPrompt += "The above is the full text content extracted from the user's attached PDF file. Please analyze it based on the user's request.";
+                } else {
+                    enhancedPrompt += "\n\n[SYSTEM NOTE: The user has attached a file at " + attachmentUrl
+                            + ". The file content could not be extracted. Please acknowledge the attachment and ask the user to describe it or add it to the Knowledge Base for analysis.]";
+                }
             }
 
             log.info("Sending request to Groq with context attached");

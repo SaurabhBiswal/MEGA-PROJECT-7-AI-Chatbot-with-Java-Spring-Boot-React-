@@ -32,6 +32,9 @@ public class ChatService {
         private AiService aiService;
 
         @Autowired
+        private com.labmentix.aichatbot.repository.KnowledgeRepository knowledgeRepository;
+
+        @Autowired
         private SimpMessagingTemplate messagingTemplate;
 
         @Transactional
@@ -98,8 +101,16 @@ public class ChatService {
                 messagingTemplate.convertAndSend("/topic/public", typingMsg);
 
                 // 3. Trigger AI Response
+                // Check if there is extracted text for this attachment
+                String extractedText = null;
+                if (chatMessage.getAttachmentUrl() != null) {
+                        extractedText = knowledgeRepository.findBySourceUrl(chatMessage.getAttachmentUrl())
+                                        .map(com.labmentix.aichatbot.model.KnowledgeDocument::getContent)
+                                        .orElse(null);
+                }
+
                 aiService.generateResponse(chatMessage.getContent(), chatMessage.getAttachmentUrl(),
-                                chatMessage.getAttachmentType())
+                                chatMessage.getAttachmentType(), extractedText)
                                 .thenAccept(responseContent -> {
                                         // 4. Save AI Message
                                         Message aiMsg = Message.builder()
