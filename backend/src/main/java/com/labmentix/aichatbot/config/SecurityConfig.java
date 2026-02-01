@@ -51,6 +51,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(java.util.List.of(
                 "https://mega-project-7-ai-chatbot-with-java.vercel.app",
                 "https://ai-chatbot.up.railway.app",
+                "https://mega-project-7-ai-chatbot-with-java-spring-boot-production.up.railway.app",
                 "http://localhost:5173",
                 "http://localhost:3000"));
         configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

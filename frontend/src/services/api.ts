@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: (import.meta.env.VITE_API_URL || 'https://ai-chatbot.up.railway.app') + '/api',
+    baseURL: (import.meta.env.VITE_API_URL || 'https://mega-project-7-ai-chatbot-with-java-spring-boot-production.up.railway.app') + '/api',
     headers: {
         'Content-Type': 'application/json',
     },
