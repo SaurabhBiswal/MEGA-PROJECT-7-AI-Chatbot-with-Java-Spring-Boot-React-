@@ -46,7 +46,7 @@ export const useChat = (conversationId?: number, onConversationUpdate?: () => vo
     useEffect(() => {
         if (!username) return;
 
-        const wsBaseUrl = import.meta.env.VITE_WS_URL || 'http://localhost:8080';
+        const wsBaseUrl = import.meta.env.VITE_WS_URL || 'https://mega-project-7-ai-chatbot-with-java-spring-boot-production.up.railway.app';
         const socket = new SockJS(`${wsBaseUrl}/ws`);
         const client = new Client({
             webSocketFactory: () => socket,

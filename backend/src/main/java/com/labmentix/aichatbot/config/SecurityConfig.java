@@ -33,10 +33,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers("/", "/health", "/api/auth/**", "/ws/**", "/h2-console/**", "/api/debug/**")
                         .permitAll()
-                        // All other /api/** endpoints require authentication
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session
@@ -50,8 +48,9 @@ public class SecurityConfig {
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        configuration.setAllowedOrigins(java.util.List.of(
+        configuration.setAllowedOriginPatterns(java.util.List.of(
                 "https://mega-project-7-ai-chatbot-with-java.vercel.app",
+                "https://mega-project-7-ai-chatbot-with-java-spring-boot-production.up.railway.app",
                 "http://localhost:5173",
                 "http://localhost:3000"));
         configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
