@@ -57,7 +57,9 @@ public class FileStorageService {
     }
 
     public String uploadFile(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        // Sanitize the original filename to remove spaces and special characters
+        String sanitizedFilename = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9._-]", "_");
+        String fileName = UUID.randomUUID().toString() + "_" + sanitizedFilename;
 
         if ("s3".equalsIgnoreCase(storageProvider) && s3Client != null) {
             return uploadToS3(file, fileName);
